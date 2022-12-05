@@ -4,3 +4,4 @@ htmlcov/
 *.zip
 *.converage
 */__pycache__
+*.ipynb
