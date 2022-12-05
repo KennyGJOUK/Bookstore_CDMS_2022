@@ -40,3 +40,34 @@ def add_funds():
     b = Buyer()
     code, message = b.add_funds(user_id, password, add_value)
     return jsonify({"message": message}), code
+
+# ------Search Part------
+@bp_buyer.route("/search_global", methods=["POST"])
+def search_global():
+    ### 全局搜索
+    user_id = request.json.get("user_id")
+    ## stype -- tags or title or content or info
+    stype = request.json.get("stype")
+    ## svalue -- search content
+    svalue = request.json.get("svalue")
+    ## page
+    page = request.json.get("page")
+    b = Buyer()
+    code, message,data = b.search_global(user_id, stype, svalue,page)
+    return jsonify({"message": message}), code
+
+@bp_buyer.route("/search_store", methods=["POST"])
+def search_store():
+    ### 在店铺内搜索
+    user_id = request.json.get("user_id")
+    ## stype -- tags or title or content or info
+    stype = request.json.get("stype")
+    ## svalue -- search content
+    svalue = request.json.get("svalue")
+    ## svalue -- search content
+    store_id = request.json.get("store_id")
+    ## page
+    page = request.json.get("page")
+    b = Buyer()
+    code, message,data = b.search_store(user_id, stype, svalue,store_id,page)
+    return jsonify({"message": message}), code

@@ -58,7 +58,6 @@ class Buyer(mydb_conn.DBConn):
             return 528, "{}".format(str(e)), ""
         except BaseException as e:
             logging.info("530, {}".format(str(e)))
-            print(str(e))
             return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id
@@ -160,3 +159,28 @@ class Buyer(mydb_conn.DBConn):
             return 530, "{}".format(str(e))
 
         return 200, "ok"
+
+    # ------Search Part------
+    def search_global(self, user_id, stype, svalue,page) -> (int,str):
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            if stype not in ['invert_tag', 'invert_title', 'invert_content']:
+                return error.error_not_exist_search_type(stype)
+            page = int(page)
+            cursor = self.conn.execute("SELECT *  from book as a"
+            "inner join (select book_id from %s where keyword = '%s') as b"
+            "on a.book_id = b.book_id"
+            "limit %d,%d"%(stype,svalue,(page-1)*10,10))
+            row = cursor.fetchall()
+            
+
+        except sqlite.Error as e:
+            return 528, "{}".format(str(e))
+        except BaseException as e:
+            return 530, "{}".format(str(e))
+
+        return 200, "ok", row
+
+    def search_store(self, user_id, stype, svalue, store_id,page) -> (int,str):
+        pass
