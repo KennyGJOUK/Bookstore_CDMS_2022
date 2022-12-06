@@ -162,7 +162,7 @@ class Buyer(mydb_conn.DBConn):
         return 200, "ok"
 
     # 收货
-    def receive_books(self, user_id: str, order_id: str):
+    def receive_book(self, user_id: str, order_id: str):
         try:
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id)
