@@ -10,7 +10,7 @@ error_code = {
     517: "stock level low, book id {}",
     518: "invalid order id {}",
     519: "not sufficient funds, order id {}",
-    520: "invalid_order_status {}",
+    520: "invalid order status {}",
     521: "",
     522: "",
     523: "",
