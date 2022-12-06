@@ -53,7 +53,8 @@ def search_global():
     ## page
     page = request.json.get("page")
     b = Buyer()
-    code, message,data = b.search_global(user_id, stype, svalue,page)
+    code, message = b.search_global(user_id, stype, svalue,page)
+
     return jsonify({"message": message}), code
 
 @bp_buyer.route("/search_store", methods=["POST"])
@@ -69,5 +70,5 @@ def search_store():
     ## page
     page = request.json.get("page")
     b = Buyer()
-    code, message,data = b.search_store(user_id, stype, svalue,store_id,page)
+    code, message = b.search_store(user_id, stype, svalue,store_id,page)
     return jsonify({"message": message}), code

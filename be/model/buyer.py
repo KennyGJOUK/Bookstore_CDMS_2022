@@ -165,13 +165,15 @@ class Buyer(mydb_conn.DBConn):
         try:
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id)
-            if stype not in ['invert_tag', 'invert_title', 'invert_content']:
+            if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
                 return error.error_not_exist_search_type(stype)
+            if stype == 'info': ## later
+                return 200, 'ok'
             page = int(page)
             cursor = self.conn.execute("SELECT *  from book as a"
-            "inner join (select book_id from %s where keyword = '%s') as b"
-            "on a.book_id = b.book_id"
-            "limit %d,%d"%(stype,svalue,(page-1)*10,10))
+            " inner join (select book_id from %s where keyword = '%s') as b"
+            " on a.book_id = b.book_id"
+            " limit %d offset %d"%(stype,svalue,10,(page-1)*10))
             row = cursor.fetchall()
             
 
@@ -180,7 +182,31 @@ class Buyer(mydb_conn.DBConn):
         except BaseException as e:
             return 530, "{}".format(str(e))
 
-        return 200, "ok", row
+        return 200, "ok"
 
     def search_store(self, user_id, stype, svalue, store_id,page) -> (int,str):
-        pass
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            if not self.store_id_exist(store_id):
+                return error.error_non_exist_store_id(store_id)
+            
+            if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
+                return error.error_not_exist_search_type(stype)
+            if stype == 'info': ## later
+                return 200, 'ok'
+            page = int(page)
+            cursor = self.conn.execute("SELECT *  from book as a"
+            " inner join (select book_id from %s where keyword = '%s') as b"
+            " on a.book_id = b.book_id"
+            " inner join (select book_id from store where store_id = '%s') as c"
+            " on a.book_id = c.book_id"
+            " limit %d offset %d"%(stype,svalue,store_id,10,(page-1)*10))
+            row = cursor.fetchall()
+            
+        except sqlite.Error as e:
+            return 528, "{}".format(str(e))
+        except BaseException as e:
+            return 530, "{}".format(str(e))
+
+        return 200, "ok"
