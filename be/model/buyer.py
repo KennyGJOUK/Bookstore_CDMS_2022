@@ -4,12 +4,13 @@ import json
 import logging
 from be.model import mydb_conn
 from be.model import error
-
+from datetime import datetime
 
 class Buyer(mydb_conn.DBConn):
     def __init__(self):
         mydb_conn.DBConn.__init__(self)
-
+    
+    #modified
     def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
         try:
@@ -40,17 +41,20 @@ class Buyer(mydb_conn.DBConn):
                     "WHERE store_id = '%s' and book_id = '%s' and stock_level >= %d; "%
                     (count, store_id, book_id, count))
                 if cursor.rowcount == 0:
+                    # self.conn.rollback()
                     return error.error_stock_level_low(book_id) + (order_id, )
 
                 self.conn.execute(
                         "INSERT INTO new_order_detail(order_id, book_id, count, price) "
                         "VALUES('%s', '%s', %d, %d);"%
                         (uid, book_id, count, price))
+                
+                total_price += count*price
 
+            timenow = datetime.utcnow()
             self.conn.execute(
-                "INSERT INTO new_order(order_id, store_id, user_id) "
-                "VALUES('%s', '%s', '%s');"%
-                (uid, store_id, user_id))
+                "INSERT INTO new_order_unpaid(order_id, buyer_id,store_id,price,pt) VALUES('%s', '%s','%s',%d,:timenow);" % (
+                    uid, user_id, store_id, total_price),{'timenow':timenow})
             self.conn.commit()
             order_id = uid
         except sqlite.Error as e:
@@ -62,11 +66,12 @@ class Buyer(mydb_conn.DBConn):
             return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id
-
+    
+    #modified
     def payment(self, user_id: str, password: str, order_id: str) -> (int, str):
         conn = self.conn
         try:
-            cursor = conn.execute("SELECT order_id, user_id, store_id FROM new_order WHERE order_id = '%s'"%(order_id,))
+            cursor = conn.execute("SELECT order_id, buyer_id, store_id, price FROM new_order_unpaid WHERE order_id = '%s'"%(order_id,))
             row = cursor.fetchone()
             if row is None:
                 return error.error_invalid_order_id(order_id)
@@ -74,6 +79,7 @@ class Buyer(mydb_conn.DBConn):
             order_id = row[0]
             buyer_id = row[1]
             store_id = row[2]
+            total_price =  row[3]
 
             if buyer_id != user_id:
                 return error.error_authorization_fail()
@@ -96,37 +102,31 @@ class Buyer(mydb_conn.DBConn):
             if not self.user_id_exist(seller_id):
                 return error.error_non_exist_user_id(seller_id)
 
-            cursor = conn.execute("SELECT book_id, count, price FROM new_order_detail WHERE order_id = '%s';"%(order_id,))
-            total_price = 0
-            for row in cursor:
-                count = row[1]
-                price = row[2]
-                total_price = total_price + price * count
-
             if balance < total_price:
                 return error.error_not_sufficient_funds(order_id)
-
+            # buyer -balance
             cursor = conn.execute("UPDATE usr set balance = balance - %d"
                                   "WHERE user_id = '%s' AND balance >= %d"%
                                   (total_price, buyer_id, total_price))
             if cursor.rowcount == 0:
                 return error.error_not_sufficient_funds(order_id)
-
+            # seller +balance
             cursor = conn.execute("UPDATE usr set balance = balance + %d"
                                   "WHERE user_id = '%s'"%
-                                  (total_price, buyer_id))
+                                  (total_price, seller_id))
 
-            if cursor.rowcount == 0:
-                return error.error_non_exist_user_id(buyer_id)
-
-            cursor = conn.execute("DELETE FROM new_order WHERE order_id = '%s'"%(order_id, ))
+            cursor = conn.execute("DELETE FROM new_order_unpaid WHERE order_id = '%s'"%(order_id, ))
             if cursor.rowcount == 0:
                 return error.error_invalid_order_id(order_id)
 
-            cursor = conn.execute("DELETE FROM new_order_detail where order_id = '%s'"%(order_id, ))
-            if cursor.rowcount == 0:
-                return error.error_invalid_order_id(order_id)
-
+            # cursor = conn.execute("DELETE FROM new_order_detail where order_id = '%s'"%(order_id, ))
+            # if cursor.rowcount == 0:
+            #     return error.error_invalid_order_id(order_id)
+            
+            timenow = datetime.utcnow()
+            conn.execute(
+            "INSERT INTO new_order_paid(order_id, buyer_id,store_id,price,status,pt) VALUES('%s', '%s','%s',%d,'%s',:timenow);" % (
+                order_id, buyer_id, store_id, total_price, 0),{'timenow':timenow})
             conn.commit()
 
         except sqlite.Error as e:
