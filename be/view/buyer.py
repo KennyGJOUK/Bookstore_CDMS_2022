@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask import jsonify
 from be.model.buyer import Buyer
+import json
 
 bp_buyer = Blueprint("buyer", __name__, url_prefix="/buyer")
 
@@ -39,4 +40,54 @@ def add_funds():
     add_value = request.json.get("add_value")
     b = Buyer()
     code, message = b.add_funds(user_id, password, add_value)
+    return jsonify({"message": message}), code
+
+# ------Search Part------
+@bp_buyer.route("/search_global", methods=["POST"])
+def search_global():
+    ### 全局搜索
+    user_id = request.json.get("user_id")
+    ## stype -- tags or title or content or info
+    stype = request.json.get("stype")
+    ## svalue -- search content
+    svalue = request.json.get("svalue")
+    ## page
+    page = request.json.get("page")
+    b = Buyer()
+    code, message,data = b.search_global(user_id, stype, svalue,page)
+    return jsonify({"message": message}), code
+
+@bp_buyer.route("/search_store", methods=["POST"])
+def search_store():
+    ### 在店铺内搜索
+    user_id = request.json.get("user_id")
+    ## stype -- tags or title or content or info
+    stype = request.json.get("stype")
+    ## svalue -- search content
+    svalue = request.json.get("svalue")
+    ## svalue -- search content
+    store_id = request.json.get("store_id")
+    ## page
+    page = request.json.get("page")
+    b = Buyer()
+    code, message,data = b.search_store(user_id, stype, svalue,store_id,page)
+    return jsonify({"message": message}), code
+
+
+# 订单
+@bp_buyer.route("/search_order", methods=["POST"])
+def search_order():
+    user_id: str = request.json.get("buyer_id")
+
+    b = Buyer()
+    code, message,ret = b.search_order(user_id)
+    print(json.dumps(ret))
+    return jsonify({"message": message,"history record": ret}), code
+
+@bp_buyer.route("/cancel_order", methods=["POST"])
+def cancel():
+    user_id: str = request.json.get("buyer_id")
+    order_id: str = request.json.get("order_id")
+    b = Buyer()
+    code, message = b.cancel(user_id,order_id)
     return jsonify({"message": message}), code
