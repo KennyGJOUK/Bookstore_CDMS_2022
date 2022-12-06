@@ -1,27 +1,13 @@
 import sqlalchemy
-from sqlalchemy import Column, String, create_engine, Integer, Text, Date
+from sqlalchemy import Column, String, create_engine, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker,scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import time
 from sqlalchemy import create_engine
 from model import mydb
-
-
-# engine = create_engine("postgresql://stu10194810401:Stu10194810401@dase-cdms-2022-pub.pg.rds.aliyuncs.com:5432/stu10194810401",
-#     max_overflow=0,
-#     # 链接池大小
-#     pool_size=5,
-#     # 链接池中没有可用链接则最多等待的秒数，超过该秒数后报错
-#     pool_timeout=10,
-#     # 多久之后对链接池中的链接进行一次回收
-#     pool_recycle=1,
-#     # 查看原生语句（未格式化）
-#     echo=True
-# )
+from datetime import datetime,time
 
 Base = declarative_base()
-# DbSession = sessionmaker(bind=engine)
-# session = DbSession()
 
 class User(Base):
     __tablename__ = "usr"
@@ -43,11 +29,35 @@ class Store(Base):
     book_info = Column(Text)
     stock_level = Column(Integer)
 
-class NewOrder(Base):
-    __tablename__ = "new_order"
-    order_id = Column(Text, primary_key = True)
-    user_id = Column(Text)
-    store_id = Column(Text)
+# 未付款订单
+class NewOrderUnpaid(Base):
+    __tablename__ = 'new_order_unpaid'
+    order_id = Column(Text, primary_key=True)
+    buyer_id = Column(Text, ForeignKey('usr.user_id'), nullable=False)
+    store_id = Column(Text, ForeignKey('user_store.store_id'), nullable=False)
+    price = Column(Integer, nullable=False)
+    pt = Column(DateTime, nullable=False)
+
+
+# 已取消订单
+class NewOrderCanceled(Base):
+    __tablename__ = 'new_order_canceled'
+    order_id = Column(Text, primary_key=True)
+    buyer_id = Column(Text, ForeignKey('usr.user_id'), nullable=False)
+    store_id = Column(Text, ForeignKey('user_store.store_id'), nullable=False)
+    price = Column(Integer, nullable=False)
+    pt = Column(DateTime, nullable=False)
+
+
+# 已付款订单
+class NewOrderPaid(Base):
+    __tablename__ = 'new_order_paid'
+    order_id = Column(Text, primary_key=True)
+    buyer_id = Column(Text, ForeignKey('usr.user_id'), nullable=False)
+    store_id = Column(Text, ForeignKey('user_store.store_id'), nullable=False)
+    price = Column(Integer, nullable=False)
+    pt = Column(DateTime, nullable=False)
+    status = Column(Integer, nullable=False)  # 0为待发货，1为已发货，2为已收货
 
 class NewOrderDetail(Base):
     __tablename__ = "new_order_detail"
@@ -106,18 +116,22 @@ def add_info():
     session.add_all([StoreA, StoreB])
     session.commit()
     
-    OrderA = NewOrder(order_id = 'order1',
-                            user_id = '小明',
+    OrderA = NewOrderPaid(order_id = 'order1',
+                            buyer_id = '小明',
                             store_id = '王掌柜的书店',
-                            )
+                            price=2000,
+                            pt = datetime.now(),
+                            status = 0)  # 0为已付款，1为已发货，2为已收货
     Order_detailA = NewOrderDetail(order_id = 'order1',
                                     book_id = 1,
                                     count = 2,
                                     price = 2000)
-    OrderB = NewOrder(order_id = 'order2',
-                            user_id = '小明',
+    OrderB = NewOrderPaid(order_id = 'order2',
+                            buyer_id = '小明',
                             store_id = '王掌柜的进口书店',
-                            )
+                            price = 10000,
+                            pt = datetime.now(),
+                            status = 2)
     Order_detailB = NewOrderDetail(order_id = 'order2',
                                     book_id = 2,
                                     count = 1,

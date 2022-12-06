@@ -160,3 +160,58 @@ class Buyer(mydb_conn.DBConn):
             return 530, "{}".format(str(e))
 
         return 200, "ok"
+
+    # 收货
+    def receive_books(self, user_id: str, order_id: str):
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            if not self.order_id_exist(order_id):
+                return error.error_invalid_order_id(order_id)
+
+            cursor = self.conn.execute("SELECT buyer_id, status FROM new_order_paid WHERE order_id = :order_id",
+                                  {"order_id": order_id, })
+            row = cursor.fetchone()
+
+            buyer_id = row[0]
+            status = row[1]
+
+            if buyer_id != user_id:
+                return error.error_authorization_fail()
+            if status != 1:
+                return error.error_invalid_order_status(order_id)
+            
+            self.conn.execute(
+                "UPDATE new_order_paid set status=2 where order_id = '%s';"%(order_id))
+            self.conn.commit()
+        
+        except sqlite.Error as e:
+            return 528, "{}".format(str(e))
+        except BaseException as e:
+            return 530, "{}".format(str(e))
+        return 200, "ok"
+
+    # ------Search Part------
+    def search_global(self, user_id, stype, svalue,page) -> (int,str):
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            if stype not in ['invert_tag', 'invert_title', 'invert_content']:
+                return error.error_not_exist_search_type(stype)
+            page = int(page)
+            cursor = self.conn.execute("SELECT *  from book as a"
+            "inner join (select book_id from %s where keyword = '%s') as b"
+            "on a.book_id = b.book_id"
+            "limit %d,%d"%(stype,svalue,(page-1)*10,10))
+            row = cursor.fetchall()
+            
+
+        except sqlite.Error as e:
+            return 528, "{}".format(str(e))
+        except BaseException as e:
+            return 530, "{}".format(str(e))
+
+        return 200, "ok", row
+
+    def search_store(self, user_id, stype, svalue, store_id,page) -> (int,str):
+        pass

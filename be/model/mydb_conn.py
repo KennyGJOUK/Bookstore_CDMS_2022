@@ -28,3 +28,19 @@ class DBConn:
             return False
         else:
             return True
+ 
+    def order_id_exist(self, order_id):
+        cursor = self.conn.execute("SELECT order_id FROM new_order_paid WHERE order_id = '%s';"%(order_id,))
+        row = cursor.fetchone()
+        if row is None:
+            return False
+        else:
+            return True
+    
+    def store_id_match_user_id(self, user_id, store_id):
+        cursor = self.conn.execute("SELECT user_id FROM user_store WHERE store_id = '%s';"%(store_id,))
+        row = cursor.fetchone()
+        if (row[0]  == user_id):
+            return True
+        else:
+            return False

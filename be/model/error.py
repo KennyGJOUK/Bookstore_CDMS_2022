@@ -10,7 +10,7 @@ error_code = {
     517: "stock level low, book id {}",
     518: "invalid order id {}",
     519: "not sufficient funds, order id {}",
-    520: "",
+    520: "invalid_order_status {}",
     521: "",
     522: "",
     523: "",
@@ -53,9 +53,14 @@ def error_stock_level_low(book_id):
 def error_invalid_order_id(order_id):
     return 518, error_code[518].format(order_id)
 
-
 def error_not_sufficient_funds(order_id):
     return 519, error_code[518].format(order_id)
+
+def error_invalid_order_status(order_id):
+    return 520, error_code[520].format(order_id)
+
+def error_not_exist_search_type(search_type):
+    return 529, error_code[529].format(search_type)
 
 
 def error_authorization_fail():
