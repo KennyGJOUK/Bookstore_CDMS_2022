@@ -51,7 +51,7 @@ class Test_cancel:
     def test_cannot_cancel_order(self):
         code = self.buyer.payment(self.order_id)
         assert code == 200
-        code = self.seller.deliver_book(self.seller_id, self.order_id)
+        code = self.seller.deliver_book(self.seller_id, self.store_id, self.order_id)
         assert code == 200
         code = self.buyer.cancel(self.buyer_id, self.order_id)
         assert code != 200
