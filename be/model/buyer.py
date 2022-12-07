@@ -170,6 +170,13 @@ class Buyer(mydb_conn.DBConn):
             if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
                 return error.error_not_exist_search_type(stype)
             if stype == 'info': ## later
+                cursor = self.conn.execute(
+                    " select * from book "
+                    " where to_tsvector('english', book_intro) "
+                    " @@ to_tsquery('english','%s')"
+                    " limit %d offset %d"%(svalue,10,(page-1)*10)
+                )
+                row = cursor.fetchall()
                 return 200, 'ok'
             page = int(page)
             cursor = self.conn.execute("SELECT *  from book as a"
@@ -196,6 +203,14 @@ class Buyer(mydb_conn.DBConn):
             if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
                 return error.error_not_exist_search_type(stype)
             if stype == 'info': ## later
+                cursor = self.conn.execute(
+                    " select * from book as a inner join (select book_id from store where store_id = '%s') as c "
+                    " on a.book_id = c.book_id"
+                    " where to_tsvector('english', book_intro) "
+                    " @@ to_tsquery('english','%s')"
+                    " limit %d offset %d"%(store_id,svalue,10,(page-1)*10)
+                )
+                row = cursor.fetchall()
                 return 200, 'ok'
             page = int(page)
             cursor = self.conn.execute("SELECT *  from book as a"

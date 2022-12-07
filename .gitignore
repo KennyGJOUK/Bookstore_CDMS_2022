@@ -5,3 +5,4 @@ htmlcov/
 *.converage
 */__pycache__
 *.ipynb
+*/pytest_cache

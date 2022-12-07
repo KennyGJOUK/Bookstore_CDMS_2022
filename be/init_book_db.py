@@ -1,11 +1,12 @@
 
 import sqlalchemy
-from sqlalchemy import Column, String, create_engine, Integer, Text, Date, LargeBinary
+from sqlalchemy import Column, String, create_engine, Integer, Text, Date, LargeBinary, Index
 from sqlalchemy.orm import sessionmaker,scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import time,sys,os
 from sqlalchemy import create_engine
 from model import mydb
+from sqlalchemy.sql import func
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fe.access.book import BookDB
 Base = declarative_base()
@@ -30,6 +31,14 @@ class Book(Base):
     tags = Column(Text)
     pictures = Column(LargeBinary)
 
+    __table_args__ = (
+        Index(
+            'ix_content',
+            func.to_tsvector('english', book_intro),
+            postgresql_using = "gin"
+        ),
+    )
+
 class Tags(Base):
     __tablename__ = 'invert_tag'
     keyword = Column(Text, nullable = False, primary_key = True)
@@ -40,11 +49,6 @@ class Title(Base):
     keyword = Column(Text, nullable = False, primary_key = True)
     book_id = Column(Text)
 
-
-class Content(Base):
-    __tablename__ = 'invert_content'
-    keyword = Column(Text, nullable = False, primary_key = True)
-    book_id = Column(Text)
 
 
 def init():
