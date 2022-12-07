@@ -18,5 +18,5 @@ def run_bench():
         ss.join()
 
 
-#if __name__ == "__main__":
-#    run_bench()
+if __name__ == "__main__":
+   run_bench()
