@@ -40,24 +40,32 @@ class Buyer:
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
-    
-    
-# 订单搜索/取消
-    def search_order(self,buyer_id: str):
-        json = {
-            "buyer_id": buyer_id
-        }
-        url = urljoin(self.url_prefix, "search_order")
+
+    ## ------Search Part------
+    def search_global(self, stype: str, svalue: str, page: int) -> int:
+        json = {"user_id": self.user_id,
+         "stype": stype,
+          "svalue": svalue,
+          "page":page}
+        url = urljoin(self.url_prefix, "search_global")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
 
-    def cancel(self,buyer_id: str, order_id: str):
-        json = {
-            "buyer_id": buyer_id,
-            "order_id": order_id
-        }
-        url = urljoin(self.url_prefix, "cancel_order")
+    def search_store(self, stype: str, svalue: str, page: int, store_id: str) -> int:
+        json = {"user_id": self.user_id,
+         "stype": stype,
+          "svalue": svalue,
+          "page":page,
+          "store_id":store_id}
+        url = urljoin(self.url_prefix, "search_store")
+        headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+        return r.status_code
+    
+    def receive_book(self, buyer_id: str, order_id: str):
+        json = {"buyer_id": buyer_id, "order_id": order_id}
+        url = urljoin(self.url_prefix, "receive_book")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
         return r.status_code

@@ -13,6 +13,7 @@ class Buyer(mydb_conn.DBConn):
     #modified
     def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
+        total_price = 0
         try:
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id) + (order_id, )
@@ -62,6 +63,7 @@ class Buyer(mydb_conn.DBConn):
             return 528, "{}".format(str(e)), ""
         except BaseException as e:
             logging.info("530, {}".format(str(e)))
+            print(str(e))
             return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id
@@ -168,6 +170,13 @@ class Buyer(mydb_conn.DBConn):
             if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
                 return error.error_not_exist_search_type(stype)
             if stype == 'info': ## later
+                cursor = self.conn.execute(
+                    " select * from book "
+                    " where to_tsvector('english', book_intro) "
+                    " @@ to_tsquery('english','%s')"
+                    " limit %d offset %d"%(svalue,10,(page-1)*10)
+                )
+                row = cursor.fetchall()
                 return 200, 'ok'
             page = int(page)
             cursor = self.conn.execute("SELECT *  from book as a"
@@ -194,6 +203,14 @@ class Buyer(mydb_conn.DBConn):
             if stype not in ['invert_tag', 'invert_title', 'invert_content', 'info']:
                 return error.error_not_exist_search_type(stype)
             if stype == 'info': ## later
+                cursor = self.conn.execute(
+                    " select * from book as a inner join (select book_id from store where store_id = '%s') as c "
+                    " on a.book_id = c.book_id"
+                    " where to_tsvector('english', book_intro) "
+                    " @@ to_tsquery('english','%s')"
+                    " limit %d offset %d"%(store_id,svalue,10,(page-1)*10)
+                )
+                row = cursor.fetchall()
                 return 200, 'ok'
             page = int(page)
             cursor = self.conn.execute("SELECT *  from book as a"
@@ -241,131 +258,3 @@ class Buyer(mydb_conn.DBConn):
         return 200, "ok"
 
    
-    
-    
-    
-    # 用户订单
-    def search_order(self, buyer_id):
-        if not self.check_user(buyer_id):
-            code, mes = error.error_non_exist_user_id(buyer_id)
-            return code, mes, " "
-        ret=[]
-        #已付款
-        records=self.session.execute(
-            " SELECT new_order_detail.order_id,title,new_order_detail.price,count,status,pt,new_order_paid.price "
-            "FROM new_order_paid,new_order_detail,book WHERE book.book_id=new_order_detail.book_id and "
-            "new_order_paid.order_id=new_order_detail.order_id and new_order_paid.buyer_id = '%s' order by new_order_detail.order_id" % (buyer_id)).fetchall()
-        if len(records)!=0:
-            #上一条记录的order id
-            order_id_previous = records[0][0]
-            statusmap = ['未发货', '已发货', '已收货']
-            details=[]
-            for i in range(len(records)):
-                record=records[i]
-                #现在的order id
-                order_id_current=record[0]
-                #同一个订单
-                if order_id_current==order_id_previous :
-                    details.append({'title':record[1],'price':record[2],'count':record[3]})
-                else:
-                    status=records[i-1][4]
-                    ret.append({'order_id':order_id_previous,'status':statusmap[status],'time':json.dumps(records[i-1][5],cls=DateEncoder),'total_price':records[i-1][6],'detail':details})
-                    details = []
-                    details.append({'title': record[1], 'price': record[2], 'count': record[3]})
-                order_id_previous=order_id_current
-            status= records[- 1][4]
-            ret.append({'order_id': order_id_previous, 'status': statusmap[status], 'time': json.dumps(records[- 1][5],cls=DateEncoder),'total_price':records[i-1][6],
-                        'detail': details})
-        # 未付款
-        records = self.session.execute(
-            "SELECT new_order_detail.order_id,title,new_order_detail.price,count,pt,new_order_unpaid.price "
-            "FROM new_order_unpaid,new_order_detail,book WHERE book.book_id=new_order_detail.book_id and "
-            "new_order_unpaid.order_id=new_order_detail.order_id and buyer_id = '%s'" % (buyer_id)).fetchall()
-        if len(records)!=0:
-            #上一条记录的order id
-            order_id_previous = records[0][0]
-            details=[]
-            for i in range(len(records)):
-                record=records[i]
-                #现在的order id
-                order_id_current=record[0]
-                #同一个订单
-                if order_id_current==order_id_previous :
-                    details.append({'title':record[1],'price':record[2],'count':record[3]})
-                else:
-                    ret.append({'order_id':order_id_previous,'status':'未付款','time':json.dumps(records[i-1][4],cls=DateEncoder),'total_price':records[i-1][5],'detail':details})
-                    details = []
-                    details.append({'title': record[1], 'price': record[2], 'count': record[3]})
-                order_id_previous=order_id_current
-            ret.append({'order_id': order_id_previous, 'status':'未付款', 'time': json.dumps(records[- 1][4],cls=DateEncoder),'total_price':records[i-1][5],
-                        'detail': details})
-        if len(ret) != 0:
-            return 200, 'ok', ret
-        else:
-            return 200, 'ok', " "
-
-    def cancel(self,buyer_id, order_id):
-        if not self.check_user(buyer_id):
-            code, mes = error.error_non_exist_user_id(buyer_id)
-            return code, mes
-        #是否属于未付款订单
-        store = self.session.execute("Select store_id,price FROM new_order_unpaid WHERE order_id = '%s' and buyer_id='%s'" % (order_id,buyer_id)).fetchone()
-        if store is not None:
-            store_id=store[0]
-            price=store[1]
-            row = self.session.execute("DELETE FROM new_order_unpaid WHERE order_id = '%s'" % (order_id,))
-        else:
-            # 是否属于已付款且未发货订单
-            order_info = self.session.execute(
-                "Select store_id,price FROM new_order_paid WHERE order_id = '%s' and buyer_id='%s' and status='0'" % (order_id,buyer_id)).fetchone()
-            if order_info is not None:
-                store_id = order_info[0]
-                price = order_info[1]
-                self.session.execute("DELETE FROM new_order_paid WHERE order_id = '%s' and status='0'" % (order_id,))
-                # 卖家减钱
-                user_id = self.session.execute(
-                    "SELECT user_id FROM user_store WHERE store_id = '%s';" % (order_info[0],)).fetchone()
-                self.session.execute(
-                    "UPDATE usr set balance = balance - %d WHERE user_id = '%s'" % (order_info[1], user_id[0]))
-                #买家加钱
-                self.session.execute(
-                    "UPDATE usr set balance = balance + %d WHERE user_id = '%s'" % (order_info[1], buyer_id))
-            else:
-                #无法取消
-                return error.error_invalid_order_id(order_id)
-        timenow = datetime.utcnow()
-        self.session.execute(
-            "INSERT INTO new_order_canceled(order_id, buyer_id,store_id,price,pt) VALUES('%s', '%s','%s',%d,:timenow);" % (
-                order_id, buyer_id, store_id, price), {'timenow': timenow})
-        #加库存
-        self.session.execute(
-                    "Update store Set stock_level = stock_level +  count from new_order_detail Where new_order_detail.book_id = store.book_id and store.store_id = '%s' and new_order_detail.order_id = '%s'" % (store_id,order_id))
-        self.session.commit()
-        return 200, 'ok'
-
-
-    def auto_cancel(self,order_id_list):#自动取消订单
-        exist_order_need_cancel=0
-        #是否属于未付款订单
-        for order_id in order_id_list:
-            store = self.session.execute("Select buyer_id,store_id,price FROM new_order_unpaid WHERE order_id = '%s'" % (order_id)).fetchone()
-
-            if store is not None:
-                buyer_id=store[0]
-                store_id=store[1]
-                price=store[2]
-                row = self.session.execute("DELETE FROM new_order_unpaid WHERE order_id = '%s'" % (order_id,))
-                timenow = datetime.utcnow()
-                self.session.execute(
-                    "INSERT INTO new_order_canceled(order_id, buyer_id,store_id,price,pt) VALUES('%s', '%s','%s',%d,:timenow);" % (
-                        order_id, buyer_id, store_id, price), {'timenow': timenow})
-                self.session.commit()
-                exist_order_need_cancel = 1
-        return 'no_such_order' if exist_order_need_cancel==0 else "auto_cancel_done"
-    
-class DateEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            return json.JSONEncoder.default(self, obj)

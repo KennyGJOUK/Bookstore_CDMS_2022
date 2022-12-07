@@ -1,7 +1,7 @@
 import sqlite3 as sqlite
 from be.model import error
 from be.model import mydb_conn
-
+from sqlalchemy.exc import SQLAlchemyError
 
 class Seller(mydb_conn.DBConn):
 
@@ -57,5 +57,35 @@ class Seller(mydb_conn.DBConn):
             return 528, "{}".format(str(e))
         except BaseException as e:
             print(str(e))
+            return 530, "{}".format(str(e))
+        return 200, "ok"
+
+    # 发货
+    def deliver_book(self, user_id: str, store_id: str, order_id: str):
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            if not self.store_id_exist(store_id):
+                return error.error_non_exist_store_id(store_id)
+            if not self.store_id_match_user_id(user_id, store_id): # add store_id_match_user_id() in mydb_conn.py
+                return error.error_authorization_fail()
+            if not self.order_id_exist(order_id): # add order_id_exist() in mydb_conn.py
+                return error.error_invalid_order_id(order_id)
+            
+            cursor = self.conn.execute(
+                "SELECT status FROM new_order_paid where order_id = '%s';"%(order_id))
+            row = cursor.fetchone()
+            status  = row[0]
+            # order_status 非待发货
+            if status != 0:
+                # add error_invalid_order_status in error.py
+                return error.error_invalid_order_status(order_id)
+            # update order_status 
+            self.conn.execute(
+                "UPDATE new_order_paid set status=1 where order_id = '%s';"%(order_id))
+            self.conn.commit()
+        except sqlite.Error as e:
+            return 528, "{}".format(str(e))
+        except BaseException as e:
             return 530, "{}".format(str(e))
         return 200, "ok"

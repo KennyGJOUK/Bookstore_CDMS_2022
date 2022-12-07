@@ -45,7 +45,7 @@ class Testreceivebook:
         code = self.buyer.receive_book(self.buyer_id, "wrong_order_id")
         assert code == 518
 
-    def test_repeat_receive_books(self):
+    def test_error_invalid_order_status(self):
         code = self.buyer.receive_book(self.buyer_id, self.order_id)
         assert code == 200
         code = self.buyer.receive_book(self.buyer_id, self.order_id)
