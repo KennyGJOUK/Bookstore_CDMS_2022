@@ -38,8 +38,8 @@ class TimerClass(threading.Thread):
     def cancel_timer(self):
         self.event.set()
 
-tmr = TimerClass()# 在无需测试自动取消订单test时删去
-tmr.start()# 在无需测试自动取消订单test时删去
+# tmr = TimerClass()# 在无需测试自动取消订单test时删去
+# tmr.start()# 在无需测试自动取消订单test时删去
 
 class Buyer(mydb_conn.DBConn):
     def __init__(self):
