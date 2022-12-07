@@ -7,21 +7,7 @@ from sqlalchemy import create_engine
 from model import mydb
 from datetime import datetime,time
 
-# engine = create_engine("postgresql://stu10194810401:Stu10194810401@dase-cdms-2022-pub.pg.rds.aliyuncs.com:5432/stu10194810401",
-#     max_overflow=0,
-#     # 链接池大小
-#     pool_size=5,
-#     # 链接池中没有可用链接则最多等待的秒数，超过该秒数后报错
-#     pool_timeout=10,
-#     # 多久之后对链接池中的链接进行一次回收
-#     pool_recycle=1,
-#     # 查看原生语句（未格式化）
-#     echo=True
-# )
-
 Base = declarative_base()
-# DbSession = sessionmaker(bind=engine)
-# session = DbSession()
 
 class User(Base):
     __tablename__ = "usr"
@@ -31,10 +17,11 @@ class User(Base):
     token = Column(Text)
     terminal = Column(Text)
 
+# add unique constraint
 class UserStore(Base):
     __tablename__ = "user_store"
     user_id = Column(Text, primary_key = True)
-    store_id = Column(Text, primary_key = True)
+    store_id = Column(Text, primary_key = True, unique = True)
 
 class Store(Base):
     __tablename__ = "store"
@@ -72,12 +59,6 @@ class NewOrderPaid(Base):
     price = Column(Integer, nullable=False)
     pt = Column(DateTime, nullable=False)
     status = Column(Integer, nullable=False)  # 0为待发货，1为已发货，2为已收货
-
-# class NewOrder(Base):
-#     __tablename__ = "new_order"
-#     order_id = Column(Text, primary_key = True)
-#     user_id = Column(Text)
-#     store_id = Column(Text)
 
 class NewOrderDetail(Base):
     __tablename__ = "new_order_detail"
