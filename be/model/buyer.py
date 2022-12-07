@@ -293,6 +293,13 @@ class Buyer(mydb_conn.DBConn):
         return 200, "ok"
 
     # 用户订单
+    def check_user(self, user_id):
+        user = self.session.execute("SELECT user_id FROM usr WHERE user_id = '%s';" % (user_id,)).fetchone()
+        if user is None:
+            return False
+        else:
+            return True
+    
     def search_order(self, buyer_id):
         if not self.check_user(buyer_id):
             code, mes = error.error_non_exist_user_id(buyer_id)
