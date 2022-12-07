@@ -89,3 +89,16 @@ class Buyer:
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
+    
+    def auto_cancel(self, store_id: str, book_id_and_count: [(str, int)]) -> (int, str):
+        books = []
+        for id_count_pair in book_id_and_count:
+            books.append({"id": id_count_pair[0], "count": id_count_pair[1]})
+        json = {"user_id": self.user_id, "store_id": store_id, "books": books}
+        url = urljoin(self.url_prefix, "new_order")
+        headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+        response_json = r.json()
+        import time
+        time.sleep(161)
+        return Buyer().auto_cancel([response_json.get("order_id")])
