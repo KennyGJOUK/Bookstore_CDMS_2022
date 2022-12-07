@@ -13,6 +13,7 @@ class Buyer(mydb_conn.DBConn):
     #modified
     def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
+        total_price = 0
         try:
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id) + (order_id, )
@@ -62,6 +63,7 @@ class Buyer(mydb_conn.DBConn):
             return 528, "{}".format(str(e)), ""
         except BaseException as e:
             logging.info("530, {}".format(str(e)))
+            print(str(e))
             return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id

@@ -63,9 +63,6 @@ def error_invalid_order_status(order_id):
 def error_not_exist_search_type(search_type):
     return 529, error_code[529].format(search_type)
 
-def error_not_exist_search_type(search_type):
-    return 529, error_code[529].format(search_type)
-
 
 def error_authorization_fail():
     return 401, error_code[401]

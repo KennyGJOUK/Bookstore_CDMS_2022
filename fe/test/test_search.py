@@ -9,7 +9,7 @@ from fe.access.new_seller import register_new_seller
 import uuid
 from fe.test.gen_book_data import GenBook
 
-class CheckSearch:
+class TestSearch:
     @pytest.fixture(autouse=True)
     def pre_run_initialization(self):
         self.user_id = "test_search_user_{}".format(str(uuid.uuid1()))

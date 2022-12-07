@@ -50,8 +50,8 @@ class Testdeliverbook:
         code = self.seller.deliver_book(self.buyer_id, self.store_id, self.order_id)
         assert code == 401
 
-    def test_repeat_send_books(self):
-        code = self.seller.deliver_book(self.seller_id,self.order_id)
+    def test_error_invalid_order_status(self):
+        code = self.seller.deliver_book(self.seller_id, self.store_id, self.order_id)
         assert code == 200
-        code = self.seller.deliver_book(self.seller_id,self.order_id )
+        code = self.seller.deliver_book(self.seller_id, self.store_id, self.order_id)
         assert code == 520
