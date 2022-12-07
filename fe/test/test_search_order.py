@@ -42,7 +42,7 @@ class Test_search_order:
                 code = self.buyer.payment(self.order_id)
                 assert code == 200
                 if flag == 1:
-                    code = self.seller.deliver_book(self.seller_id, self.order_id)
+                    code = self.seller.deliver_book(self.seller_id, self.store_id, self.order_id)
                     assert code == 200
                     code = self.buyer.receive_book(self.buyer_id, self.order_id)
                     assert code == 200
