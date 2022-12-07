@@ -291,6 +291,7 @@ class Buyer(mydb_conn.DBConn):
             return 530, "{}".format(str(e))
         return 200, "ok"
 
+
     # 用户订单
     def check_user(self, user_id):
         user = self.conn.execute("SELECT user_id FROM usr WHERE user_id = '%s';" % (user_id,)).fetchone()
@@ -423,3 +424,4 @@ class DateEncoder(json.JSONEncoder):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
         else:
             return json.JSONEncoder.default(self, obj)
+

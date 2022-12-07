@@ -1,4 +1,3 @@
-
 import sqlalchemy
 from sqlalchemy import Column, String, create_engine, Integer, Text, Date, LargeBinary
 from sqlalchemy.orm import sessionmaker,scoped_session

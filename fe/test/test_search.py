@@ -69,9 +69,3 @@ class TestSearch:
         stype = self.stype_list[0]
         code = self.buyer.search_store(stype, self.svalue, self.page, self.store_id)
         assert code != 200
-
-    
-
-    
-
-    
