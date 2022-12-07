@@ -17,10 +17,11 @@ class User(Base):
     token = Column(Text)
     terminal = Column(Text)
 
+# add unique constraint
 class UserStore(Base):
     __tablename__ = "user_store"
     user_id = Column(Text, primary_key = True)
-    store_id = Column(Text, primary_key = True)
+    store_id = Column(Text, primary_key = True, unique = True)
 
 class Store(Base):
     __tablename__ = "store"
