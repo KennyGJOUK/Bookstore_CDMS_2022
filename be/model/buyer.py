@@ -29,7 +29,6 @@ class TimerClass(threading.Thread):
 
     def run(self):  # 每秒运行一次 将超时订单删去
         global to_be_overtime
-        # schedule.every().second.do(thread)#每秒开一个线程去auto_cancel,做完的线程自动退出
         while not self.event.is_set():
             self.event.wait(1)
             if (datetime.utcnow() + timedelta(seconds=1)).second in to_be_overtime:
