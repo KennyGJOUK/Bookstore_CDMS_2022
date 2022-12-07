@@ -11,9 +11,9 @@ error_code = {
     518: "invalid order id {}",
     519: "not sufficient funds, order id {}",
     520: "invalid order status {}",
-    521: "",
-    522: "",
-    523: "",
+    521: "bad file type",
+    522: "no file commit",
+    523: "wrong input",
     524: "",
     525: "",
     526: "",
@@ -67,6 +67,14 @@ def error_not_exist_search_type(search_type):
 def error_authorization_fail():
     return 401, error_code[401]
 
+def error_bad_type():
+    return 521, error_code[521]
+
+def error_no_file_commit():
+    return 522, error_code[522]
+
+def error_wrong_input():
+    return 523, error_code[523]
 
 def error_and_message(code, message):
     return code, message
