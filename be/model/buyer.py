@@ -5,6 +5,41 @@ import logging
 from be.model import mydb_conn
 from be.model import error
 from datetime import datetime
+from datetime import timedelta
+import uuid
+import time
+import threading
+import sqlalchemy
+
+to_be_overtime={}
+def overtime_append(key,value):#对to_be_overtime进行操作
+    global to_be_overtime
+    if key in to_be_overtime:
+        to_be_overtime[key].append(value)
+    else:
+        to_be_overtime[key]=[value]
+
+class TimerClass(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.event = threading.Event()
+
+    def thread(self):
+        Buyer().auto_cancel(to_be_overtime[(datetime.utcnow() + timedelta(seconds=1)).second])
+
+    def run(self):  # 每秒运行一次 将超时订单删去
+        global to_be_overtime
+        # schedule.every().second.do(thread)#每秒开一个线程去auto_cancel,做完的线程自动退出
+        while not self.event.is_set():
+            self.event.wait(1)
+            if (datetime.utcnow() + timedelta(seconds=1)).second in to_be_overtime:
+                self.thread()
+
+    def cancel_timer(self):
+        self.event.set()
+
+tmr = TimerClass()# 在无需测试自动取消订单test时删去
+tmr.start()# 在无需测试自动取消订单test时删去
 
 class Buyer(mydb_conn.DBConn):
     def __init__(self):
