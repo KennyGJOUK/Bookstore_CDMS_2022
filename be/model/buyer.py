@@ -11,35 +11,6 @@ import time
 import threading
 import sqlalchemy
 
-to_be_overtime={}
-def overtime_append(key,value):#对to_be_overtime进行操作
-    global to_be_overtime
-    if key in to_be_overtime:
-        to_be_overtime[key].append(value)
-    else:
-        to_be_overtime[key]=[value]
-
-class TimerClass(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.event = threading.Event()
-
-    def thread(self):
-        Buyer().auto_cancel(to_be_overtime[(datetime.utcnow() + timedelta(seconds=1)).second])
-
-    def run(self):  # 每秒运行一次 将超时订单删去
-        global to_be_overtime
-        while not self.event.is_set():
-            self.event.wait(1)
-            if (datetime.utcnow() + timedelta(seconds=1)).second in to_be_overtime:
-                self.thread()
-
-    def cancel_timer(self):
-        self.event.set()
-
-# tmr = TimerClass()# 在无需测试自动取消订单test时删去
-# tmr.start()# 在无需测试自动取消订单test时删去
-
 class Buyer(mydb_conn.DBConn):
     def __init__(self):
         mydb_conn.DBConn.__init__(self)
@@ -425,3 +396,33 @@ class DateEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, obj)
 
+to_be_overtime={}
+def overtime_append(key,value):#对to_be_overtime进行操作
+    global to_be_overtime
+    if key in to_be_overtime:
+        to_be_overtime[key].append(value)
+    else:
+        to_be_overtime[key]=[value]
+
+class TimerClass(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.event = threading.Event()
+    def thread(self):
+        Buyer().auto_cancel(to_be_overtime[(datetime.utcnow() + timedelta(seconds=1)).second])
+    # 每秒运行一次 将超时订单删去
+    def run(self):  
+        global to_be_overtime
+        while not self.event.is_set():
+            self.event.wait(1)
+            if (datetime.utcnow() + timedelta(seconds=1)).second in to_be_overtime:
+                self.thread()
+
+    def cancel_timer(self):
+        self.event.set()
+
+# timer = TimerClass()# 在无需测试自动取消订单test时删去
+# timer.start()# 在无需测试自动取消订单test时删去
+# def tostop():
+#     global tmr
+#     tmr.cancel_timer()
