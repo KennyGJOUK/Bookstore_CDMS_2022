@@ -15,6 +15,9 @@ class mydb:
         DbSession = sessionmaker(bind=engine)
         session = DbSession()
         return session
+    
+    def get_db_engine(self):
+        return self.engine
 
 
 db_obj = None
@@ -26,3 +29,7 @@ def init_db():
 def get_db_conn():
     global db_obj
     return db_obj.get_db_conn()
+
+def get_db_engine():
+    global db_obj
+    return db_obj.get_db_engine()

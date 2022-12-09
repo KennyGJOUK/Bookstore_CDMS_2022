@@ -1,0 +1,186 @@
+.
+|-- README (2).md
+|-- README.md
+|-- app.log
+|-- be
+|   |-- __init__.py
+|   |-- __pycache__
+|   |   |-- __init__.cpython-38.pyc
+|   |   `-- serve.cpython-38.pyc
+|   |-- app.py
+|   |-- model
+|   |   |-- __init__.py
+|   |   |-- __pycache__
+|   |   |   |-- __init__.cpython-38.pyc
+|   |   |   |-- buyer.cpython-38.pyc
+|   |   |   |-- error.cpython-38.pyc
+|   |   |   |-- mydb.cpython-38.pyc
+|   |   |   |-- mydb_conn.cpython-38.pyc
+|   |   |   |-- seller.cpython-38.pyc
+|   |   |   |-- store.cpython-38.pyc
+|   |   |   `-- user.cpython-38.pyc
+|   |   |-- buyer.py
+|   |   |-- error.py
+|   |   |-- mydb.py
+|   |   |-- mydb_conn.py
+|   |   |-- seller.py
+|   |   `-- user.py
+|   |-- serve.py
+|   `-- view
+|       |-- __init__.py
+|       |-- __pycache__
+|       |   |-- __init__.cpython-38.pyc
+|       |   |-- auth.cpython-38.pyc
+|       |   |-- buyer.cpython-38.pyc
+|       |   `-- seller.cpython-38.pyc
+|       |-- auth.py
+|       |-- buyer.py
+|       `-- seller.py
+|-- code.txt
+|-- doc
+|   |-- auth.md
+|   |-- buyer.md
+|   `-- seller.md
+|-- fe
+|   |-- __init__.py
+|   |-- __pycache__
+|   |   |-- __init__.cpython-38.pyc
+|   |   |-- conf.cpython-38.pyc
+|   |   `-- conftest.cpython-38-pytest-6.2.3.pyc
+|   |-- access
+|   |   |-- __init__.py
+|   |   |-- __pycache__
+|   |   |   |-- __init__.cpython-38.pyc
+|   |   |   |-- auth.cpython-38.pyc
+|   |   |   |-- book.cpython-38.pyc
+|   |   |   |-- buyer.cpython-38.pyc
+|   |   |   |-- new_buyer.cpython-38.pyc
+|   |   |   |-- new_seller.cpython-38.pyc
+|   |   |   `-- seller.cpython-38.pyc
+|   |   |-- auth.py
+|   |   |-- book.py
+|   |   |-- buyer.py
+|   |   |-- new_buyer.py
+|   |   |-- new_seller.py
+|   |   `-- seller.py
+|   |-- bench
+|   |   |-- __init__.py
+|   |   |-- __pycache__
+|   |   |   |-- __init__.cpython-38.pyc
+|   |   |   |-- run.cpython-38.pyc
+|   |   |   |-- session.cpython-38.pyc
+|   |   |   `-- workload.cpython-38.pyc
+|   |   |-- bench.md
+|   |   |-- run.py
+|   |   |-- session.py
+|   |   `-- workload.py
+|   |-- conf.py
+|   |-- conftest.py
+|   |-- data
+|   |   |-- book.db
+|   |   `-- scraper.py
+|   `-- test
+|       |-- __pycache__
+|       |   |-- gen_book_data.cpython-38.pyc
+|       |   |-- test_add_book.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_add_funds.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_add_stock_level.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_bench.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_cancel.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_create_store.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_deliver_book.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_login.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_new_order.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_password.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_payment.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_receive_book.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_register.cpython-38-pytest-6.2.3.pyc
+|       |   |-- test_search.cpython-38-pytest-6.2.3.pyc
+|       |   `-- test_search_order.cpython-38-pytest-6.2.3.pyc
+|       |-- gen_book_data.py
+|       |-- test.md
+|       |-- test_add_book.py
+|       |-- test_add_funds.py
+|       |-- test_add_stock_level.py
+|       |-- test_bench.py
+|       |-- test_cancel.py
+|       |-- test_create_store.py
+|       |-- test_deliver_book.py
+|       |-- test_login.py
+|       |-- test_new_order.py
+|       |-- test_password.py
+|       |-- test_payment.py
+|       |-- test_receive_book.py
+|       |-- test_register.py
+|       |-- test_search.py
+|       `-- test_search_order.py
+|-- htmlcov
+|   |-- coverage_html.js
+|   |-- d_1cc6a50e343b256c___init___py.html
+|   |-- d_1cc6a50e343b256c_buyer_py.html
+|   |-- d_1cc6a50e343b256c_db_conn_py.html
+|   |-- d_1cc6a50e343b256c_error_py.html
+|   |-- d_1cc6a50e343b256c_mydb_conn_py.html
+|   |-- d_1cc6a50e343b256c_mydb_py.html
+|   |-- d_1cc6a50e343b256c_seller_py.html
+|   |-- d_1cc6a50e343b256c_store_py.html
+|   |-- d_1cc6a50e343b256c_user_py.html
+|   |-- d_97f3027875475d61___init___py.html
+|   |-- d_97f3027875475d61_auth_py.html
+|   |-- d_97f3027875475d61_buyer_py.html
+|   |-- d_97f3027875475d61_seller_py.html
+|   |-- d_9ffa8e6b64436dbb___init___py.html
+|   |-- d_9ffa8e6b64436dbb_conf_py.html
+|   |-- d_9ffa8e6b64436dbb_conftest_py.html
+|   |-- d_b7dfc0644a983115___init___py.html
+|   |-- d_b7dfc0644a983115_auth_py.html
+|   |-- d_b7dfc0644a983115_book_py.html
+|   |-- d_b7dfc0644a983115_buyer_py.html
+|   |-- d_b7dfc0644a983115_new_buyer_py.html
+|   |-- d_b7dfc0644a983115_new_seller_py.html
+|   |-- d_b7dfc0644a983115_seller_py.html
+|   |-- d_e4370d12cde9a7ae___init___py.html
+|   |-- d_e4370d12cde9a7ae_run_py.html
+|   |-- d_e4370d12cde9a7ae_session_py.html
+|   |-- d_e4370d12cde9a7ae_workload_py.html
+|   |-- d_ef6913d5dc6d2743___init___py.html
+|   |-- d_ef6913d5dc6d2743_app_py.html
+|   |-- d_ef6913d5dc6d2743_init_book_db_py.html
+|   |-- d_ef6913d5dc6d2743_init_db_py.html
+|   |-- d_ef6913d5dc6d2743_init_invert_index_py.html
+|   |-- d_ef6913d5dc6d2743_serve_py.html
+|   |-- d_f7a6e81cea0338db_gen_book_data_py.html
+|   |-- d_f7a6e81cea0338db_test_add_book_py.html
+|   |-- d_f7a6e81cea0338db_test_add_funds_py.html
+|   |-- d_f7a6e81cea0338db_test_add_stock_level_py.html
+|   |-- d_f7a6e81cea0338db_test_bench_py.html
+|   |-- d_f7a6e81cea0338db_test_cancel_py.html
+|   |-- d_f7a6e81cea0338db_test_create_store_py.html
+|   |-- d_f7a6e81cea0338db_test_deliver_book_py.html
+|   |-- d_f7a6e81cea0338db_test_login_py.html
+|   |-- d_f7a6e81cea0338db_test_new_order_py.html
+|   |-- d_f7a6e81cea0338db_test_password_py.html
+|   |-- d_f7a6e81cea0338db_test_payment_py.html
+|   |-- d_f7a6e81cea0338db_test_receive_book_py.html
+|   |-- d_f7a6e81cea0338db_test_register_py.html
+|   |-- d_f7a6e81cea0338db_test_search_order_py.html
+|   |-- d_f7a6e81cea0338db_test_search_py.html
+|   |-- favicon_32.png
+|   |-- index.html
+|   |-- keybd_closed.png
+|   |-- keybd_open.png
+|   |-- status.json
+|   `-- style.css
+|-- init
+|   |-- init_book_db.py
+|   |-- init_db.py
+|   `-- init_invert_index.py
+|-- pytest.ini
+|-- requirements.txt
+|-- script
+|   `-- test.sh
+|-- setup.py
+|-- test.ipynb
+`-- tree.txt
+
+19 directories, 164 files

@@ -4,7 +4,10 @@ from sqlalchemy.orm import sessionmaker,scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import time,sys,os
 from sqlalchemy import create_engine
-from model import mydb
+import sys,os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from be.model import mydb
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fe.access.book import BookDB
 import jieba
