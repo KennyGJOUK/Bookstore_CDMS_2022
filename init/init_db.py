@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker,scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import time
 from sqlalchemy import create_engine
-from model import mydb
+from be.model import mydb
 from datetime import datetime,time
 
 Base = declarative_base()
